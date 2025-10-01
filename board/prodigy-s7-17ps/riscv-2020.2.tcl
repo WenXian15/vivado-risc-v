@@ -50,8 +50,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
-   create_project project_1 myproj -part xc7a100tcsg324-1
-   set_property BOARD_PART digilentinc.com:nexys-a7-100t:part0:1.0 [current_project]
+   create_project project_1 myproj -part xcvu19p-fsva3824-2-e
 }
 
 
@@ -134,7 +133,7 @@ if { $bCheckIPs == 1 } {
 xilinx.com:ip:clk_wiz:6.0\
 xilinx.com:ip:util_vector_logic:2.0\
 xilinx.com:ip:smartconnect:1.0\
-xilinx.com:ip:mig_7series:4.2\
+xilinx.com:ip:ddr4:2.2\
 xilinx.com:ip:xadc_wiz:3.3\
 xilinx.com:ip:xlconcat:2.1\
 "
@@ -568,8 +567,8 @@ proc create_hier_cell_DDR { parentCell nameHier } {
   # Create interface pins
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI
 
-  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr2_sdram
-
+  # create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr2_sdram
+  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr4_sdram
 
   # Create pins
   create_bd_pin -dir I -type clk axi_clock
@@ -599,40 +598,79 @@ proc create_hier_cell_DDR { parentCell nameHier } {
    }
 
   # Create instance: mig_7series_0, and set properties
-  set mig_7series_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:mig_7series:4.2 mig_7series_0 ]
+  # set mig_7series_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:mig_7series:4.2 mig_7series_0 ]
+  set mig_ddr4_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:ddr4:2.2 mig_ddr4_0] 
 
   # Generate the PRJ File for MIG
-  set str_mig_folder [get_property IP_DIR [ get_ips [ get_property CONFIG.Component_Name $mig_7series_0 ] ] ]
-  set str_mig_file_name mig_a.prj
-  set str_mig_file_path ${str_mig_folder}/${str_mig_file_name}
+  # set str_mig_folder [get_property IP_DIR [ get_ips [ get_property CONFIG.Component_Name $mig_7series_0 ] ] ]
+  # set str_mig_file_name mig_a.prj
+  # set str_mig_file_path ${str_mig_folder}/${str_mig_file_name}
 
-  write_mig_file_riscv_mig_7series_0_0 $str_mig_file_path
+  # write_mig_file_riscv_mig_7series_0_0 $str_mig_file_path
 
-  set_property -dict [ list \
-   CONFIG.BOARD_MIG_PARAM {ddr2_sdram} \
-   CONFIG.MIG_DONT_TOUCH_PARAM {Custom} \
-   CONFIG.RESET_BOARD_INTERFACE {Custom} \
-   CONFIG.XML_INPUT_FILE {mig_a.prj} \
- ] $mig_7series_0
+#  set_property -dict [ list \
+#   CONFIG.BOARD_MIG_PARAM {ddr2_sdram} \
+#   CONFIG.MIG_DONT_TOUCH_PARAM {Custom} \
+#   CONFIG.RESET_BOARD_INTERFACE {Custom} \
+#   CONFIG.XML_INPUT_FILE {mig_a.prj} \
+# ] $mig_7series_0
+
+   set_property -dict [ list \
+    CONFIG.C0.DDR4_TimePeriod {1250} \
+    CONFIG.C0.DDR4_InputClockPeriod {5000} \
+    CONFIG.C0.DDR4_MemoryType {SODIMMs} \
+    CONFIG.C0_DDR4_MemoryPart {MTA8ATF1G64HZ-2G3} \
+    CONFIG.C0_DDR4_DDR_DataWidth {64} \
+    CONFIG.C0.DDR4_DataMask {DM_NO_DBI} \
+    CONFIG.C0.DDR4_Ecc {false} \
+    CONFIG.C0.DDR4_AUTO_AP_COL_A3 {true} \
+    CONFIG.C0.DDR4_CasLatency {12} \
+    CONFIG.C0.DDR4_CasWriteLatency {9} \
+    CONFIG.C0.DDR4_AxiDataWidth {512} \
+    CONFIG.C0.DDR4_AxiAddressWidth {33} \
+    CONFIG.C0.BANK_GROUP_WIDTH {2} \
+    CONFIG.C0.CK_WIDTH {1} \
+    CONFIG.C0.CKE_WIDTH {1} \
+    CONFIG.C0_CS_WIDTH {1} \
+    CONFIG.C0.ODT_WIDTH {1} \
+    # AXI Options
+    CONFIG.C0.DDR4_AxiDataWidth {128} \
+    CONFIG.C0.DDR4_AxiArbitrationScheme {ROUND_ROBIN} \
+    CONFIG.C0.DDR4_AxiNarrowBurst {true} \
+    CONFIG.C0.DDR4_AxiIDWidth {8} \
+    # System Clock
+    CONFIG.System_Clock {No_Buffer} \
+ ] $mig_ddr4_0
+
+
 
   # Create interface connections
-  connect_bd_intf_net -intf_net mig_7series_0_DDR2 [get_bd_intf_pins ddr2_sdram] [get_bd_intf_pins mig_7series_0/DDR2]
+  # connect_bd_intf_net -intf_net mig_7series_0_DDR2 [get_bd_intf_pins ddr2_sdram] [get_bd_intf_pins mig_7series_0/DDR2]
+  connect_bd_intf_net -intf_net mig_ddr4_0 [get_bd_intf_pins ddr4_sdram] [get_bd_intf_pins mig_ddr4_0/C0_DDR4]
   connect_bd_intf_net -intf_net MEM_AXI4 [get_bd_intf_pins S_AXI] [get_bd_intf_pins axi_smc_1/S00_AXI]
-  connect_bd_intf_net -intf_net axi_smc_1_M00_AXI [get_bd_intf_pins axi_smc_1/M00_AXI] [get_bd_intf_pins mig_7series_0/S_AXI]
+  # connect_bd_intf_net -intf_net axi_smc_1_M00_AXI [get_bd_intf_pins axi_smc_1/M00_AXI] [get_bd_intf_pins mig_7series_0/S_AXI]
+  connect_bd_intf_net -intf_net axi_smc_1_M00_AXI [get_bd_intf_pins axi_smc_1/M00_AXI] [get_bd_intf_pins mig_ddr4_0/C0_DDR4_S_AXI]
 
   # Create port connections
   connect_bd_net -net AXI_reset [get_bd_pins axi_reset] [get_bd_pins axi_smc_1/aresetn]
   connect_bd_net -net AXI_clock [get_bd_pins axi_clock] [get_bd_pins axi_smc_1/aclk]
-  connect_bd_net -net clock_200MHz [get_bd_pins clock_200MHz] [get_bd_pins mem_reset_control_0/clock] [get_bd_pins mig_7series_0/sys_clk_i]
+  # connect_bd_net -net clock_200MHz [get_bd_pins clock_200MHz] [get_bd_pins mem_reset_control_0/clock] [get_bd_pins mig_7series_0/sys_clk_i]
+  connect_bd_net -net clock_200MHz [get_bd_pins clock_200MHz] [get_bd_pins mem_reset_control_0/clock] [get_bd_pins mig_ddr4_0/sys_clk_i]
   connect_bd_net -net clock_ok [get_bd_pins clock_ok] [get_bd_pins mem_reset_control_0/clock_ok]
   connect_bd_net -net mem_ok [get_bd_pins mem_ok] [get_bd_pins mem_reset_control_0/mem_ok]
-  connect_bd_net -net mem_reset [get_bd_pins mem_reset_control_0/mem_reset] [get_bd_pins mig_7series_0/sys_rst]
-  connect_bd_net -net mem_aresetn [get_bd_pins mem_reset_control_0/aresetn] [get_bd_pins mig_7series_0/aresetn]
-  connect_bd_net -net mem_ui_clk_sync_rst [get_bd_pins mem_reset_control_0/ui_clk_sync_rst] [get_bd_pins mig_7series_0/ui_clk_sync_rst]
-  connect_bd_net -net mem_init_calib_complete [get_bd_pins mem_reset_control_0/calib_complete] [get_bd_pins mig_7series_0/init_calib_complete]
-  connect_bd_net -net mem_mmcm_locked [get_bd_pins mem_reset_control_0/mmcm_locked] [get_bd_pins mig_7series_0/mmcm_locked]
-  connect_bd_net -net mem_ui_clk [get_bd_pins mem_reset_control_0/ui_clk] [get_bd_pins axi_smc_1/aclk1] [get_bd_pins mig_7series_0/ui_clk]
-  connect_bd_net -net device_temp [get_bd_pins device_temp] [get_bd_pins mig_7series_0/device_temp_i]
+  # connect_bd_net -net mem_reset [get_bd_pins mem_reset_control_0/mem_reset] [get_bd_pins mig_7series_0/sys_rst]
+  connect_bd_net -net mem_reset [get_bd_pins mem_reset_control_0/mem_reset] [get_bd_pins mig_ddr4_0/sys_rst]
+  # connect_bd_net -net mem_aresetn [get_bd_pins mem_reset_control_0/aresetn] [get_bd_pins mig_7series_0/aresetn]
+  connect_bd_net -net mem_aresetn [get_bd_pins mem_reset_control_0/aresetn] [get_bd_pins mig_ddr4_0/c0_ddr4_aresetn]
+  connect_bd_net -net mem_aresetn [get_bd_pins mem_reset_control_0/resetn] [get_bd_pins mig_ddr4_0/sys_rst]
+  # connect_bd_net -net mem_ui_clk_sync_rst [get_bd_pins mem_reset_control_0/ui_clk_sync_rst] [get_bd_pins mig_7series_0/ui_clk_sync_rst]
+  connect_bd_net -net mem_ui_clk_sync_rst [get_bd_pins mem_reset_control_0/ui_clk_sync_rst] [get_bd_pins mig_ddr4_0/c0_ddr4_ui_clk_sync_rst]
+  # connect_bd_net -net mem_init_calib_complete [get_bd_pins mem_reset_control_0/calib_complete] [get_bd_pins mig_7series_0/init_calib_complete]
+  connect_bd_net -net mem_init_calib_complete [get_bd_pins mem_reset_control_0/calib_complete] [get_bd_pins mig_ddr4_0/c0_init_calib_complete]
+  # connect_bd_net -net mem_mmcm_locked [get_bd_pins mem_reset_control_0/mmcm_locked] [get_bd_pins mig_7series_0/mmcm_locked]
+  # connect_bd_net -net mem_ui_clk [get_bd_pins mem_reset_control_0/ui_clk] [get_bd_pins axi_smc_1/aclk1] [get_bd_pins mig_7series_0/ui_clk]
+  connect_bd_net -net mem_ui_clk [get_bd_pins mem_reset_control_0/ui_clk] [get_bd_pins axi_smc_1/aclk1] [get_bd_pins mig_ddr4_0/c0_ddr4_ui_clk]
+  # connect_bd_net -net device_temp [get_bd_pins device_temp] [get_bd_pins mig_7series_0/device_temp_i]
   connect_bd_net -net sys_reset [get_bd_pins sys_reset] [get_bd_pins mem_reset_control_0/sys_reset]
 
   # Restore current instance
@@ -673,7 +711,8 @@ proc create_root_design { parentCell } {
 
 
   # Create interface ports
-  set ddr2_sdram [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr2_sdram ]
+  # set ddr2_sdram [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr2_sdram ]
+  set ddr4_sdram [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr4_sdram]
   set rmii [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:rmii_rtl:1.0 rmii ]
   set rs232_uart [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 rs232_uart ]
 
@@ -729,7 +768,8 @@ proc create_root_design { parentCell } {
  ] $util_vector_logic_0
 
   # Create interface connections
-  connect_bd_intf_net -intf_net DDR_ddr2_sdram [get_bd_intf_ports ddr2_sdram] [get_bd_intf_pins DDR/ddr2_sdram]
+  # connect_bd_intf_net -intf_net DDR_ddr2_sdram [get_bd_intf_ports ddr2_sdram] [get_bd_intf_pins DDR/ddr2_sdram]
+  connect_bd_intf_net -intf_net DDR_ddr4_sdram [get_bd_intf_ports ddr4_sdram] [get_bd_intf_pins DDR/ddr4_sdram]
   connect_bd_intf_net -intf_net IO_RMII_0 [get_bd_intf_ports rmii] [get_bd_intf_pins IO/RMII]
   connect_bd_intf_net -intf_net IO_uart [get_bd_intf_ports rs232_uart] [get_bd_intf_pins IO/UART]
   connect_bd_intf_net -intf_net MEM_AXI4 [get_bd_intf_pins DDR/S_AXI] [get_bd_intf_pins RocketChip/MEM_AXI4]

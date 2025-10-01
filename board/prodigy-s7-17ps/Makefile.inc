@@ -1,0 +1,5 @@
+BOARD_PART  ?= prodigy-s7-17ps
+XILINX_PART ?= xcvu19p-fsva3824-2-e
+CFG_DEVICE  ?= 
+CFG_PART    ?= 
+MEMORY_SIZE ?= 0x80000000
