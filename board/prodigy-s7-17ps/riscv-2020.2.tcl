@@ -662,7 +662,7 @@ proc create_hier_cell_DDR { parentCell nameHier } {
   connect_bd_net -net mem_reset [get_bd_pins mem_reset_control_0/mem_reset] [get_bd_pins mig_ddr4_0/sys_rst]
   # connect_bd_net -net mem_aresetn [get_bd_pins mem_reset_control_0/aresetn] [get_bd_pins mig_7series_0/aresetn]
   connect_bd_net -net mem_aresetn [get_bd_pins mem_reset_control_0/aresetn] [get_bd_pins mig_ddr4_0/c0_ddr4_aresetn]
-  connect_bd_net -net mem_aresetn [get_bd_pins mem_reset_control_0/resetn] [get_bd_pins mig_ddr4_0/sys_rst]
+  # connect_bd_net -net mem_aresetn [get_bd_pins mem_reset_control_0/resetn] [get_bd_pins mig_ddr4_0/sys_rst]
   # connect_bd_net -net mem_ui_clk_sync_rst [get_bd_pins mem_reset_control_0/ui_clk_sync_rst] [get_bd_pins mig_7series_0/ui_clk_sync_rst]
   connect_bd_net -net mem_ui_clk_sync_rst [get_bd_pins mem_reset_control_0/ui_clk_sync_rst] [get_bd_pins mig_ddr4_0/c0_ddr4_ui_clk_sync_rst]
   # connect_bd_net -net mem_init_calib_complete [get_bd_pins mem_reset_control_0/calib_complete] [get_bd_pins mig_7series_0/init_calib_complete]
