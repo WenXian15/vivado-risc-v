@@ -491,7 +491,7 @@ proc create_hier_cell_IO { parentCell nameHier } {
  ] $xlconcat_0
 
   # Create interface connections
-  connect_bd_intf_net -intf_net EthernetRMII [get_bd_intf_pins RMII] [get_bd_intf_pins ethernet_stream_0/RMII]
+  # connect_bd_intf_net -intf_net EthernetRMII [get_bd_intf_pins RMII] [get_bd_intf_pins ethernet_stream_0/RMII]
   connect_bd_intf_net -intf_net Ethernet_TX_AXIS [get_bd_intf_pins Ethernet/TX_AXIS] [get_bd_intf_pins ethernet_stream_0/TX_AXIS]
   connect_bd_intf_net -intf_net S01_AXI_1 [get_bd_intf_pins Ethernet/M_AXI] [get_bd_intf_pins io_axi_m/S01_AXI]
   connect_bd_intf_net -intf_net UART_RS232 [get_bd_intf_pins UART] [get_bd_intf_pins UART/RS232]
