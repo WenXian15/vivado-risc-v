@@ -1,4 +1,4 @@
-module ethernet_kc705 (
+module ethernet_prodigy_s7_17ps (
     (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 reset RST" *)
     (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_HIGH" *)
     input reset,

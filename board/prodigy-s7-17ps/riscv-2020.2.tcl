@@ -165,7 +165,7 @@ $rocket_module_name\
 mem_reset_control\
 ethernet\
 sdc_controller\
-ethernet_nexys_a7_100t\
+ethernet_prodigy_s7_17ps\
 uart\
 "
 
@@ -458,7 +458,7 @@ proc create_hier_cell_IO { parentCell nameHier } {
  ] $XADC
 
   # Create instance: ethernet_stream_0, and set properties
-  set block_name ethernet_nexys_a7_100t
+  set block_name ethernet_prodigy_s7_17ps
   set block_cell_name ethernet_stream_0
   if { [catch {set ethernet_stream_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
@@ -568,7 +568,7 @@ proc create_hier_cell_DDR { parentCell nameHier } {
   create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI
 
   # create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr2_sdram
-  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr4_sdram
+  create_bd_intf_pin -mode Master -vlnv xilinx.com:interface:ddr4_rtl:1.0 ddr4_sdram
 
   # Create pins
   create_bd_pin -dir I -type clk axi_clock
@@ -626,19 +626,19 @@ proc create_hier_cell_DDR { parentCell nameHier } {
     CONFIG.C0.DDR4_AUTO_AP_COL_A3 {true} \
     CONFIG.C0.DDR4_CasLatency {12} \
     CONFIG.C0.DDR4_CasWriteLatency {9} \
-    CONFIG.C0.DDR4_AxiDataWidth {512} \
-    CONFIG.C0.DDR4_AxiAddressWidth {33} \
+    # CONFIG.C0.DDR4_AxiDataWidth {512} \
+    # CONFIG.C0.DDR4_AxiAddressWidth {33} \
     CONFIG.C0.BANK_GROUP_WIDTH {2} \
     CONFIG.C0.CK_WIDTH {1} \
     CONFIG.C0.CKE_WIDTH {1} \
-    CONFIG.C0_CS_WIDTH {1} \
+    CONFIG.C0.CS_WIDTH {1} \
     CONFIG.C0.ODT_WIDTH {1} \
-    # AXI Options
-    CONFIG.C0.DDR4_AxiDataWidth {128} \
-    CONFIG.C0.DDR4_AxiArbitrationScheme {ROUND_ROBIN} \
-    CONFIG.C0.DDR4_AxiNarrowBurst {true} \
-    CONFIG.C0.DDR4_AxiIDWidth {8} \
-    # System Clock
+    # AXI Options \
+    # CONFIG.C0.DDR4_AxiDataWidth {128} \
+    # CONFIG.C0.DDR4_AxiArbitrationScheme {ROUND_ROBIN} \
+    # CONFIG.C0.DDR4_AxiNarrowBurst {true} \
+    # CONFIG.C0.DDR4_AxiIDWidth {8} \
+    # System Clock \
     CONFIG.System_Clock {No_Buffer} \
  ] $mig_ddr4_0
 
@@ -646,7 +646,7 @@ proc create_hier_cell_DDR { parentCell nameHier } {
 
   # Create interface connections
   # connect_bd_intf_net -intf_net mig_7series_0_DDR2 [get_bd_intf_pins ddr2_sdram] [get_bd_intf_pins mig_7series_0/DDR2]
-  connect_bd_intf_net -intf_net mig_ddr4_0 [get_bd_intf_pins ddr4_sdram] [get_bd_intf_pins mig_ddr4_0/C0_DDR4]
+  connect_bd_intf_net -intf_net mig_ddr4_0_net [get_bd_intf_pins ddr4_sdram] [get_bd_intf_pins mig_ddr4_0/C0_DDR4]
   connect_bd_intf_net -intf_net MEM_AXI4 [get_bd_intf_pins S_AXI] [get_bd_intf_pins axi_smc_1/S00_AXI]
   # connect_bd_intf_net -intf_net axi_smc_1_M00_AXI [get_bd_intf_pins axi_smc_1/M00_AXI] [get_bd_intf_pins mig_7series_0/S_AXI]
   connect_bd_intf_net -intf_net axi_smc_1_M00_AXI [get_bd_intf_pins axi_smc_1/M00_AXI] [get_bd_intf_pins mig_ddr4_0/C0_DDR4_S_AXI]
@@ -712,7 +712,7 @@ proc create_root_design { parentCell } {
 
   # Create interface ports
   # set ddr2_sdram [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr2_sdram ]
-  set ddr4_sdram [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr4_sdram]
+  set ddr4_sdram [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddr4_rtl:1.0 ddr4_sdram]
   set rmii [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:rmii_rtl:1.0 rmii ]
   set rs232_uart [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 rs232_uart ]
 
