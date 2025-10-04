@@ -12,4 +12,4 @@ set_property CLOCK_DEDICATED_ROUTE BACKBONE [get_nets -of_objects [get_ports sys
 create_clock -name sys_clk_pin -period 10.00 [get_ports sys_clock]
 
 ## Reset button
-set_property -dict { PACKAGE_PIN C2 IOSTANDARD LVCMOS33 } [get_ports reset];
+set_property -dict { PACKAGE_PIN H7 IOSTANDARD LVCMOS33 } [get_ports reset];
