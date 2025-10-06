@@ -1,63 +1,36 @@
 #-----------------------------------------------------------
-#              Ethernet / GMII                            -
+#              Ethernet / RGMII                            -
 #-----------------------------------------------------------
 
-set_property -dict { PACKAGE_PIN R23   IOSTANDARD LVCMOS25 } [get_ports { eth_mdio_clock }];
-set_property -dict { PACKAGE_PIN J21   IOSTANDARD LVCMOS25 } [get_ports { eth_mdio_data }];
-set_property -dict { PACKAGE_PIN N30   IOSTANDARD LVCMOS25 } [get_ports { eth_mdio_int }];
-set_property -dict { PACKAGE_PIN L20   IOSTANDARD LVCMOS25 } [get_ports { eth_mdio_reset }];
+set_property -dict { PACKAGE_PIN U49  IOSTANDARD LVCMOS15 } [get_ports { eth_mdio_clock }];
+set_property -dict { PACKAGE_PIN V49  IOSTANDARD LVCMOS15 } [get_ports { eth_mdio_data }];
+set_property -dict { PACKAGE_PIN   IOSTANDARD LVCMOS18 } [get_ports { eth_mdio_int }];
+set_property -dict { PACKAGE_PIN   IOSTANDARD LVCMOS33 } [get_ports { eth_mdio_reset }];
+set_property -dict { PACKAGE_PIN N48  IOSTANDARD LVCMOS15 } [get_ports { rgmii_rxc }];
+set_property -dict { PACKAGE_PIN   IOSTANDARD LVCMOS15 } [get_ports { rgmii_rx_ctl }];
+set_property -dict { PACKAGE_PIN U47  IOSTANDARD LVCMOS15 } [get_ports { rgmii_rd[0] }];
+set_property -dict { PACKAGE_PIN T47  IOSTANDARD LVCMOS15 } [get_ports { rgmii_rd[1] }];
+set_property -dict { PACKAGE_PIN M46  IOSTANDARD LVCMOS15 } [get_ports { rgmii_rd[2] }];
+set_property -dict { PACKAGE_PIN M47  IOSTANDARD LVCMOS15 } [get_ports { rgmii_rd[3] }];
+set_property -dict { PACKAGE_PIN N49  IOSTANDARD LVCMOS15 } [get_ports { rgmii_txc }];
+set_property -dict { PACKAGE_PIN   IOSTANDARD LVCMOS15 } [get_ports { rgmii_tx_ctl }];
+set_property -dict { PACKAGE_PIN W50  IOSTANDARD LVCMOS15 } [get_ports { rgmii_td[0] }];
+set_property -dict { PACKAGE_PIN V50  IOSTANDARD LVCMOS15 } [get_ports { rgmii_td[1] }];
+set_property -dict { PACKAGE_PIN W47  IOSTANDARD LVCMOS15 } [get_ports { rgmii_td[2] }];
+set_property -dict { PACKAGE_PIN W48  IOSTANDARD LVCMOS15 } [get_ports { rgmii_td[3] }];
 
-set_property -dict { PACKAGE_PIN R30   IOSTANDARD LVCMOS25 } [get_ports { gmii_crs }];
-set_property -dict { PACKAGE_PIN W19   IOSTANDARD LVCMOS25 } [get_ports { gmii_col }];
-set_property -dict { PACKAGE_PIN U27   IOSTANDARD LVCMOS25 } [get_ports { gmii_rx_clk }];
-set_property -dict { PACKAGE_PIN V26   IOSTANDARD LVCMOS25 } [get_ports { gmii_rx_er }];
-set_property -dict { PACKAGE_PIN R28   IOSTANDARD LVCMOS25 } [get_ports { gmii_rx_dv }];
-set_property -dict { PACKAGE_PIN U30   IOSTANDARD LVCMOS25 } [get_ports { gmii_rxd[0] }];
-set_property -dict { PACKAGE_PIN U25   IOSTANDARD LVCMOS25 } [get_ports { gmii_rxd[1] }];
-set_property -dict { PACKAGE_PIN T25   IOSTANDARD LVCMOS25 } [get_ports { gmii_rxd[2] }];
-set_property -dict { PACKAGE_PIN U28   IOSTANDARD LVCMOS25 } [get_ports { gmii_rxd[3] }];
-set_property -dict { PACKAGE_PIN R19   IOSTANDARD LVCMOS25 } [get_ports { gmii_rxd[4] }];
-set_property -dict { PACKAGE_PIN T27   IOSTANDARD LVCMOS25 } [get_ports { gmii_rxd[5] }];
-set_property -dict { PACKAGE_PIN T26   IOSTANDARD LVCMOS25 } [get_ports { gmii_rxd[6] }];
-set_property -dict { PACKAGE_PIN T28   IOSTANDARD LVCMOS25 } [get_ports { gmii_rxd[7] }];
-set_property -dict { PACKAGE_PIN M28   IOSTANDARD LVCMOS25 } [get_ports { gmii_tx_clk }];
-set_property -dict { PACKAGE_PIN K30   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_gtx_clk }];
-set_property -dict { PACKAGE_PIN N29   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_tx_er }];
-set_property -dict { PACKAGE_PIN M27   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_tx_en }];
-set_property -dict { PACKAGE_PIN N27   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_txd[0] }];
-set_property -dict { PACKAGE_PIN N25   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_txd[1] }];
-set_property -dict { PACKAGE_PIN M29   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_txd[2] }];
-set_property -dict { PACKAGE_PIN L28   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_txd[3] }];
-set_property -dict { PACKAGE_PIN J26   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_txd[4] }];
-set_property -dict { PACKAGE_PIN K26   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_txd[5] }];
-set_property -dict { PACKAGE_PIN L30   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_txd[6] }];
-set_property -dict { PACKAGE_PIN J28   IOSTANDARD LVCMOS25 SLEW FAST DRIVE 16 } [get_ports { gmii_txd[7] }];
+create_clock -period 8.000 -name rgmii_rx_clk [get_ports rgmii_rxc]
 
-set gmii_rx_clk [create_clock -period 8.000 -name gmii_rx_clk [get_ports gmii_rx_clk]]
-set gmii_tx_clk [create_clock -period 8.000 -name gmii_tx_clk [get_ports gmii_gtx_clk]]
-#set mii_tx_clk [create_clock -period 40.000 -name mii_tx_clk [get_ports gmii_tx_clk]]
-
-set eth_clock [get_clocks -of_objects [get_pins -hier Ethernet/clock]]
-set eth_clock_period [get_property -min PERIOD $eth_clock]
-set rx_clock_period [get_property -min PERIOD $gmii_rx_clk]
-set tx_clock_period [get_property -min PERIOD $gmii_tx_clk]
-
-set_max_delay -from $eth_clock -to $gmii_tx_clk -datapath_only $tx_clock_period
-set_max_delay -from $gmii_tx_clk -to $eth_clock -datapath_only $eth_clock_period
-
-#set_max_delay -from $eth_clock -to $mii_tx_clk -datapath_only $tx_clock_period
-#set_max_delay -from $mii_tx_clk -to $eth_clock -datapath_only $eth_clock_period
-
-set_max_delay -from $eth_clock -to $gmii_rx_clk -datapath_only $rx_clock_period
-set_max_delay -from $gmii_rx_clk -to $eth_clock -datapath_only $eth_clock_period
-
-# KC705 board uses Marvell Alaska 88E1111 PHY, 2.5V signaling
-
-set_input_delay -add_delay -clock gmii_rx_clk -max 6.00 [get_ports { gmii_rxd* gmii_rx_dv gmii_rx_er gmii_crs gmii_col }]
-set_input_delay -add_delay -clock gmii_rx_clk -min 3.00 [get_ports { gmii_rxd* gmii_rx_dv gmii_rx_er gmii_crs gmii_col }]
-
-set_output_delay -add_delay -clock gmii_tx_clk -max 3.00 [get_ports { gmii_txd* gmii_tx_en gmii_tx_er }]
-set_output_delay -add_delay -clock gmii_tx_clk -min 0.00 [get_ports { gmii_txd* gmii_tx_en gmii_tx_er }]
+# Genesys 2 board uses RTL8211E-VL phy, TXDLY off, RXDLY on, 1.5V signaling, HP bank (ODELAY available).
+# Note: max (setup) is measured from prev clock edge, min (hold) - from current clock edge.
+# Data valid period, relative to the current clock edge, is [max-4.0ns .. min].
+# With RXDLY on, the center of data valid period is supposed to be at the clock edge, but it is set at -1.35ns offset.
+# This offset is not required by RGMII specs, but tests show it improves stability on Genesys 2 board.
+# Changing of the constraints require changes of IDELAY_VALUE in ethernet-genesys2.v.
+set_input_delay -add_delay -clock rgmii_rx_clk -max 2.00 [get_ports { rgmii_rd* rgmii_rx_ctl }]
+set_input_delay -add_delay -clock rgmii_rx_clk -min 0.70 [get_ports { rgmii_rd* rgmii_rx_ctl }]
+set_input_delay -add_delay -clock rgmii_rx_clk -max 2.00 -clock_fall [get_ports { rgmii_rd* rgmii_rx_ctl }]
+set_input_delay -add_delay -clock rgmii_rx_clk -min 0.70 -clock_fall [get_ports { rgmii_rd* rgmii_rx_ctl }]
 
 # To see implemented RX timing, run from Vivado Tcl Console:
-# report_timing -from [get_ports {gmii_rxd* gmii_rx_er gmii_rx_dv}] -rise_to gmii_rx_clk -delay_type min_max -max_paths 10 -name gmii_rx  -file gmii_rx.txt
+# report_timing -from [get_ports {rgmii_rd* rgmii_rx_ctl}] -rise_to rgmii_rx_clk -delay_type min_max -max_paths 10 -name rgmii_rx  -file rgmii_rx.txt
