@@ -127,6 +127,7 @@ eth_mac_inst (
     .cfg_rx_enable(1'b1)
 );
 
+
 (* IODELAY_GROUP = "rgmii_idelay_group" *)
 IDELAYCTRL rgmii_idelay_control_block (
     .REFCLK(clock200),
@@ -134,6 +135,7 @@ IDELAYCTRL rgmii_idelay_control_block (
     .RDY()
 );
 
+/*
 (* IODELAY_GROUP = "rgmii_idelay_group" *)
 IDELAYE2 #(
     .IDELAY_TYPE("FIXED"),
@@ -154,9 +156,37 @@ rgmii_idelay_clk (
     .LDPIPEEN(1'b0),
     .REGRST(1'b0)
 );
+*/
+// IDELEYE3 does not allow DATAOUT to drive BUFG* (Error DRC REQP-1741)
+// Reference : https://adaptivesupport.amd.com/s/question/0D52E00006hpRavSAE/idelaye3-output-cannot-drive-a-bufg-in-ultrascale?language=ja
+assign rgmii_rx_clk_delay = rgmii_rx_clk;
+/*
+    (* IODELAY_GROUP = "rgmii_idelay_group" *)
+    IDELAYE3 #(
+        .DELAY_SRC("IDATAIN"),
+        .DELAY_TYPE("FIXED"),
+        .DELAY_VALUE(`rgmii_data_idelay)
+    
+    )
+    rgmii_idelay_clk (
+        .IDATAIN(rgmii_rx_clk),
+        .DATAOUT(rgmii_rx_clk_delay),
+        .DATAIN(1'b0),
+        .CLK(1'b0),
+        .CE(1'b0),
+        .INC(1'b0),
+        //.CINVCTRL(1'b0),
+        .CNTVALUEIN(5'd0),
+        .CNTVALUEOUT(),
+        .LOAD(1'b0)
+        //.LDPIPEEN(1'b0),
+        //.REGRST(1'b0)
+    );
+    */
 
 genvar n;
 generate for (n = 0; n < 4; n = n + 1) begin
+    /*
     (* IODELAY_GROUP = "rgmii_idelay_group" *)
     IDELAYE2 #(
         .IDELAY_TYPE("FIXED"),
@@ -177,8 +207,35 @@ generate for (n = 0; n < 4; n = n + 1) begin
         .LDPIPEEN(1'b0),
         .REGRST(1'b0)
     );
+    */
+
+    (* IODELAY_GROUP = "rgmii_idelay_group" *)
+    IDELAYE3 #(
+        .DELAY_SRC("IDATAIN"),
+        .DELAY_TYPE("FIXED"),
+        .DELAY_VALUE(`rgmii_data_idelay)
+    
+    )
+    rgmii_idelay_rxd (
+        .IDATAIN(rgmii_rxd[n]),
+        .DATAOUT(rgmii_rxd_delay[n]),
+        .DATAIN(1'b0),
+        .CLK(1'b0),
+        .CE(1'b0),
+        .INC(1'b0),
+        //.CINVCTRL(1'b0),
+        .CNTVALUEIN(5'd0),
+        .CNTVALUEOUT(),
+        .LOAD(1'b0)
+        //.LDPIPEEN(1'b0),
+        //.REGRST(1'b0)
+    );
+
+
+
 end endgenerate
 
+/*
 (* IODELAY_GROUP = "rgmii_idelay_group" *)
 IDELAYE2 #(
     .IDELAY_TYPE("FIXED"),
@@ -199,7 +256,31 @@ rgmii_idelay_ctl (
     .LDPIPEEN(1'b0),
     .REGRST(1'b0)
 );
+*/
 
+(* IODELAY_GROUP = "rgmii_idelay_group" *)
+IDELAYE3 #(
+    .DELAY_SRC("IDATAIN"),
+    .DELAY_TYPE("FIXED"),
+    .DELAY_VALUE(`rgmii_data_idelay)
+  
+)
+rgmii_idelay_ctl (
+    .IDATAIN(rgmii_rx_ctl),
+    .DATAOUT(rgmii_rx_ctl_delay),
+    .DATAIN(1'b0),
+    .CLK(1'b0),
+    .CE(1'b0),
+    .INC(1'b0),
+    //.CINVCTRL(1'b0),
+    .CNTVALUEIN(5'd0),
+    .CNTVALUEOUT(),
+    .LOAD(1'b0)
+    //.LDPIPEEN(1'b0),
+    //.REGRST(1'b0)
+);
+
+/*
 (* IODELAY_GROUP = "rgmii_idelay_group" *)
 ODELAYE2 #(
     .ODELAY_TYPE("FIXED"),
@@ -219,5 +300,28 @@ rgmii_odelay_clk (
     .ODATAIN(rgmii_tx_clk_delay),
     .REGRST(1'b0)
 );
+*/
+
+(* IODELAY_GROUP = "rgmii_idelay_group" *)
+ODELAYE3 #(
+    .DELAY_TYPE("FIXED"),
+    .DELAY_VALUE(`rgmii_clock_odelay)
+)
+rgmii_odelay_clk (
+    .DATAOUT(rgmii_tx_clk),
+    //.C(1'b0),
+    .CE(1'b0),
+    //.CINVCTRL(1'b0),
+    .CLK(1'b0),
+    .CNTVALUEIN(0),
+    .INC(1'b0),
+    .LOAD(1'b0),
+    //.LDPIPEEN(1'b0),
+    .ODATAIN(rgmii_tx_clk_delay)
+    //.REGRST(1'b0)
+);
+
+
+
 
 endmodule

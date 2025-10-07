@@ -21,5 +21,6 @@ set_property -dict { PACKAGE_PIN AB7 IOSTANDARD LVCMOS15 } [get_ports reset]
 set_property -dict { PACKAGE_PIN AB8 IOSTANDARD LVCMOS15 } [get_ports LED0]
 
 # Cooling fan
-set_property -dict { PACKAGE_PIN L26 IOSTANDARD LVCMOS25 } [get_ports fan_en]
+# Not supporting fan control
+#set_property -dict { PACKAGE_PIN L26 IOSTANDARD LVCMOS25 } [get_ports fan_en]
 #set_property -dict { PACKAGE_PIN U22 IOSTANDARD LVCMOS25 } [get_ports fan_tach]
